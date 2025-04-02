@@ -1,0 +1,23 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: MavenAuthenticate@0
+  displayName: 'Authenticate with Maven'
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'  # Ścieżka do pliku POM
+    goals: 'clean package'     # Cele Maven
+    options: '-Dmaven.test.skip=true'  # Opcje, np. pominięcie testów
+    publishJUnitResults: true  # Publikowanie wyników testów JUnit
+    testResultsFiles: '**/target/surefire-reports/*.xml'  # Ścieżka do wyników testów
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'target'  # Ścieżka do katalogu z artefaktami
+    ArtifactName: 'drop'     # Nazwa artefaktu
+    publishLocation: 'Container'  # Miejsce publikacji artefaktów
